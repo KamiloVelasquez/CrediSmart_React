@@ -1,0 +1,112 @@
+<style>
+
+  /* Carrusel: ancho completo y altura adaptable */
+  #carouselExampleCaptions {
+    width: 100%;
+  }
+
+  #carouselExampleCaptions .carousel-item img {
+    display: block;
+    width: 100%;
+    height: 100px;        /* Altura por defecto para pantallas pequeñas */
+    max-height: 920px;    /* Límite superior */
+    object-fit: cover;    /* Ajusta y recorta la imagen sin deformarla */
+  }
+
+  /* Altura media para pantallas pequeñas/medianas */
+  @media (min-width: 576px) {
+    #carouselExampleCaptions .carousel-item img {
+      height: 340px;
+    }
+  }
+
+  /* Altura mayor para pantallas grandes */
+  @media (min-width: 992px) {
+    #carouselExampleCaptions .carousel-item img {
+      height: 420px;
+    }
+  }
+
+  /* Colores personalizados de header */
+  .custom-bg-primary {
+    background-color: rgb(36, 97, 36); /* Verde institucional */
+  }
+  
+
+/* Estilo base de la tarjeta */
+.card {
+  background-color: #ffffff; /* color base */
+  border: 1px solid #ddd;
+  border-radius: 15px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease; /* suaviza el efecto */
+  padding: 20px;
+}
+
+/* Cuando el cursor pasa encima */
+.card:hover {
+  background-color: #f0f6ff; /* color al hacer hover */
+  transform: translateY(-5px); /* se eleva un poco */
+  box-shadow: 0 8px 16px  #15803d; /* sombra verde */
+  border-color:  #15803d; /* borde verde más fuerte */
+}
+
+.custom-btn {
+  background-color: rgb(36, 97, 36); /* verde corporativo */
+  border: none;
+  color: white;
+  transition: all 0.3s ease;
+}
+
+.custom-btn:hover {
+  background-color: #15803d; /* verde más oscuro al pasar el mouse */
+  transform: translateY(-2px);
+  box-shadow: 0 6px 12px rgb(36, 97, 36);
+}
+
+.text-creditsmart {
+  color: rgb(36, 97, 36); /* verde corporativo */
+}
+
+.text-primary {
+  color: rgb(36, 97, 36); /* verde corporativo */
+}
+ .text-green {
+  color: rgb(36, 97, 36); /* verde corporativo */
+}
+
+.text-muted {
+  color: #6c757d; /* color gris para textos secundarios */
+}   
+
+.btn-success {
+  background-color: rgb(36, 97, 36); /* verde corporativo */
+  color: white t; /* color del texto */
+}
+
+.btn-success:hover {
+  background-color: #15803d; /* verde más oscuro al pasar el mouse */
+}
+
+.btn-outline-primary{
+  color: rgb(36, 97, 36); /* verde corporativo */
+  border-color: rgb(36, 97, 36); /* borde verde */
+}   
+
+.custom-bg-primary {
+  background: linear-gradient(to bottom, rgb(36, 97, 36));
+  color: #ffffff;
+  padding: 3rem 1rem;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.custom-products-section {
+    text-align: center;
+    color: rgb(36, 97, 36);
+    padding-top: 4rem;
+    padding-bottom: 4rem;
+}
+
+</style>
