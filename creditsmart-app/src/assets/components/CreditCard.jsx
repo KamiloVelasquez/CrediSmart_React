@@ -1,38 +1,27 @@
-// src/components/CreditCard.jsx
-import React from "react";
 import { Link } from "react-router-dom";
 
-// Tarjeta de producto (crédito)
-// Comentarios: este componente recibe un `product` y lo muestra bonito.
-// Para practicar: observa cómo usamos `toLocaleString()` para formatear números.
-export default function CreditCard({ product }) {
+export default function CreditCard({ nombre, tasa, montoMin, montoMax, plazo, img }) {
   return (
-    <article className="card h-100 shadow-sm">
-      {/* La imagen viene desde el objeto `product.img` (ruta relativa desde /src) */}
-      <img
-        src={product.img}
-        alt={product.name}
-        className="card-img-top"
-        style={{ height: 160, objectFit: "contain" }}
-      />
+    <div className="col-lg-4 col-md-6">
+      <div className="card p-3 shadow-sm h-100">
+        <div className="card-body">
+          <img src={img} alt={nombre} width="40" className="mb-3" />
 
-      <div className="card-body d-flex flex-column">
-        <h5 className="card-title">{product.name}</h5>
+          <h5 className="card-title custom-text-primary mb-3">{nombre}</h5>
 
-        {/* Mostrar la tasa anual con formato sencillo */}
-        <p className="text-success fw-bold fs-5">{product.rate}% anual</p>
+          <ul className="list-unstyled product-details mt-3">
+            <li>Tasa: <span className="float-end fw-bold text-success">{tasa}% mensual</span></li>
+            <li>Monto: <span className="float-end fw-bold">${montoMin.toLocaleString()} - ${montoMax.toLocaleString()}</span></li>
+            <li>Plazo: <span className="float-end fw-bold">{plazo} meses</span></li>
+          </ul>
 
-        {/* Mostrar rango de montos con formato local (separa miles) */}
-        <p className="text-muted">
-          ${product.min.toLocaleString()} – ${product.max.toLocaleString()}
-        </p>
-
-        <div className="mt-auto">
-          <Link className="btn btn-success btn-sm" to="/solicitar">
-            Solicitar
-          </Link>
+          <div className="d-grid mt-4">
+            <Link className="btn btn-primary custom-btn" to="/solicitar">
+              Solicitar Ahora
+            </Link>
+          </div>
         </div>
       </div>
-    </article>
-  )
+    </div>
+  );
 }

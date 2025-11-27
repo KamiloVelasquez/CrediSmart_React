@@ -30,7 +30,6 @@
   background-color: rgb(36, 97, 36); /* Verde institucional */
 }
 
-
 /* Estilo base de la tarjeta */
 .card {
   background-color: #ffffff; /* color base */
@@ -75,11 +74,10 @@
 
 .text-muted {
   color: #6c757d; /* color gris para textos secundarios */
-}
+}   
 
 .btn-success {
   background-color: rgb(36, 97, 36); /* verde corporativo */
-  color: white; /* color del texto corregido */
 }
 
 .btn-success:hover {
@@ -89,7 +87,7 @@
 .btn-outline-primary{
   color: rgb(36, 97, 36); /* verde corporativo */
   border-color: rgb(36, 97, 36); /* borde verde */
-}
+}   
 
 .custom-bg-primary {
   background: linear-gradient(to bottom, rgb(36, 97, 36));
