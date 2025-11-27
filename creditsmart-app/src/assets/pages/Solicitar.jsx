@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import { creditos } from "../../data/creditos";
 import illustration from "../IMAGES/Crédito Libre Inversión.png";
 import Swal from 'sweetalert2'
-import 'sweetalert2/dist/sweetalert2.min.css'
 
 const solicitudesMemoria = []; // almacenamiento temporal en memoria
 
@@ -106,7 +105,14 @@ export default function Solicitar() {
     });
     if (Object.keys(newErrors).length) {
       setErrors(newErrors);
-      setMensaje("Por favor completa los campos obligatorios.");
+      // focus first field with error for better UX
+      const first = Object.keys(newErrors)[0];
+      document.getElementById(first)?.focus();
+      Swal.fire({
+        icon: "error",
+        title: "¡Uy!",
+        text: "Por favor completa los campos obligatorios.",
+      });
       return;
     }
 
@@ -117,14 +123,13 @@ export default function Solicitar() {
       fecha: new Date().toISOString()
     });
 
+    // Mensaje de éxito (sweetalert2)
       Swal.fire({
         title: "Solicitud enviada con éxito ✔",
         icon: "success",
         draggable: true
       });
 
-    //setMensaje("Solicitud enviada con éxito ✔");
-    //setShowResumen(false);
 
     // limpiar automáticamente después de enviar
     setTimeout(() => {
@@ -139,7 +144,7 @@ export default function Solicitar() {
     <main className="container py-5">
       <h1 className="text-center mb-5 text-green">Solicitud de Crédito</h1>
 
-      <div className="row gx-5 align-items-center">
+      <div className="row gx-5 align-items-stretch" style={{ minHeight: '72vh' }}>
         {/* Formulario a la izquierda */}
         <div className="col-12 col-md-6">
           <form className="bg-white p-4 rounded shadow-sm" onSubmit={handleSubmit} noValidate>
@@ -149,26 +154,26 @@ export default function Solicitar() {
               <div className="row g-3">
                 <div className="col-md-6">
                   <label htmlFor="nombre" className="form-label">Nombre completo</label>
-                  <input id="nombre" value={form.nombre} onChange={handleChange} className="form-control" />
-                  {errors.nombre && <small className="text-danger">{errors.nombre}</small>}
+                  <input id="nombre" name="nombre" value={form.nombre} onChange={handleChange} className="form-control" aria-invalid={!!errors.nombre} aria-describedby={errors.nombre ? 'nombre-error' : undefined} />
+                  {errors.nombre && <small id="nombre-error" className="text-danger">{errors.nombre}</small>}
                 </div>
 
                 <div className="col-md-6">
                   <label htmlFor="cedula" className="form-label">Cédula</label>
-                  <input id="cedula" type="number" value={form.cedula} onChange={handleChange} className="form-control" />
-                  {errors.cedula && <small className="text-danger">{errors.cedula}</small>}
+                  <input id="cedula" name="cedula" type="text" value={form.cedula} onChange={handleChange} className="form-control" aria-invalid={!!errors.cedula} aria-describedby={errors.cedula ? 'cedula-error' : undefined} />
+                  {errors.cedula && <small id="cedula-error" className="text-danger">{errors.cedula}</small>}
                 </div>
 
                 <div className="col-md-6">
                   <label htmlFor="email" className="form-label">Email</label>
-                  <input id="email" type="email" value={form.email} onChange={handleChange} className="form-control" />
-                  {errors.email && <small className="text-danger">{errors.email}</small>}
+                  <input id="email" name="email" type="email" value={form.email} onChange={handleChange} className="form-control" aria-invalid={!!errors.email} aria-describedby={errors.email ? 'email-error' : undefined} />
+                  {errors.email && <small id="email-error" className="text-danger">{errors.email}</small>}
                 </div>
 
                 <div className="col-md-6">
                   <label htmlFor="telefono" className="form-label">Teléfono</label>
-                  <input id="telefono" value={form.telefono} onChange={handleChange} className="form-control" />
-                  {errors.telefono && <small className="text-danger">{errors.telefono}</small>}
+                  <input id="telefono" name="telefono" value={form.telefono} onChange={handleChange} className="form-control" aria-invalid={!!errors.telefono} aria-describedby={errors.telefono ? 'telefono-error' : undefined} />
+                  {errors.telefono && <small id="telefono-error" className="text-danger">{errors.telefono}</small>}
                 </div>
               </div>
             </fieldset>
@@ -179,24 +184,24 @@ export default function Solicitar() {
               <div className="row g-3">
                 <div className="col-md-6">
                   <label htmlFor="tipoCredito" className="form-label">Tipo de crédito</label>
-                  <select id="tipoCredito" value={form.tipoCredito} onChange={handleChange} className="form-select">
+                  <select id="tipoCredito" name="tipoCredito" value={form.tipoCredito} onChange={handleChange} className="form-select" aria-invalid={!!errors.tipoCredito} aria-describedby={errors.tipoCredito ? 'tipoCredito-error' : undefined}>
                     <option value="">Seleccione...</option>
                     {creditos.map((c) => (
                       <option key={c.id} value={c.nombre}>{c.nombre}</option>
                     ))}
                   </select>
-                  {errors.tipoCredito && <small className="text-danger">{errors.tipoCredito}</small>}
+                  {errors.tipoCredito && <small id="tipoCredito-error" className="text-danger">{errors.tipoCredito}</small>}
                 </div>
 
                 <div className="col-md-6">
                   <label htmlFor="monto" className="form-label">Monto solicitado ($)</label>
-                  <input id="monto" type="number" min="0" value={form.monto} onChange={handleChange} className="form-control" />
-                  {errors.monto && <small className="text-danger">{errors.monto}</small>}
+                  <input id="monto" name="monto" type="number" min="0" value={form.monto} onChange={handleChange} className="form-control" aria-invalid={!!errors.monto} aria-describedby={errors.monto ? 'monto-error' : undefined} />
+                  {errors.monto && <small id="monto-error" className="text-danger">{errors.monto}</small>}
                 </div>
 
                 <div className="col-md-6">
                   <label htmlFor="plazo" className="form-label">Plazo en meses</label>
-                  <select id="plazo" value={form.plazo} onChange={handleChange} className="form-select">
+                  <select id="plazo" name="plazo" value={form.plazo} onChange={handleChange} className="form-select" aria-invalid={!!errors.plazo} aria-describedby={errors.plazo ? 'plazo-error' : undefined}>
                     <option value="">Seleccione...</option>
                     <option value="12">12</option>
                     <option value="24">24</option>
@@ -204,12 +209,13 @@ export default function Solicitar() {
                     <option value="48">48</option>
                     <option value="60">60</option>
                   </select>
-                  {errors.plazo && <small className="text-danger">{errors.plazo}</small>}
+                  {errors.plazo && <small id="plazo-error" className="text-danger">{errors.plazo}</small>}
                 </div>
 
                 <div className="col-12">
                   <label htmlFor="destino" className="form-label">Destino del crédito</label>
-                  <textarea id="destino" value={form.destino} onChange={handleChange} rows="2" className="form-control" placeholder="Ej: Compra de vehículo, remodelación, etc."></textarea>
+                  <textarea id="destino" name="destino" value={form.destino} onChange={handleChange} rows="2" className="form-control" placeholder="Ej: Compra de vehículo, remodelación, etc." aria-invalid={!!errors.destino} aria-describedby={errors.destino ? 'destino-error' : undefined}></textarea>
+                  {errors.destino && <small id="destino-error" className="text-danger">{errors.destino}</small>}
                 </div>
               </div>
             </fieldset>
@@ -220,17 +226,20 @@ export default function Solicitar() {
               <div className="row g-3">
                 <div className="col-md-6">
                   <label htmlFor="empresa" className="form-label">Empresa donde trabaja</label>
-                  <input id="empresa" value={form.empresa} onChange={handleChange} className="form-control" />
+                  <input id="empresa" name="empresa" value={form.empresa} onChange={handleChange} className="form-control" aria-invalid={!!errors.empresa} aria-describedby={errors.empresa ? 'empresa-error' : undefined} />
+                  {errors.empresa && <small id="empresa-error" className="text-danger">{errors.empresa}</small>}
                 </div>
 
                 <div className="col-md-6">
                   <label htmlFor="cargo" className="form-label">Cargo</label>
-                  <input id="cargo" value={form.cargo} onChange={handleChange} className="form-control" />
+                  <input id="cargo" name="cargo" value={form.cargo} onChange={handleChange} className="form-control" aria-invalid={!!errors.cargo} aria-describedby={errors.cargo ? 'cargo-error' : undefined} />
+                  {errors.cargo && <small id="cargo-error" className="text-danger">{errors.cargo}</small>}
                 </div>
 
                 <div className="col-md-6">
                   <label htmlFor="ingresos" className="form-label">Ingresos mensuales ($)</label>
-                  <input id="ingresos" type="number" min="0" value={form.ingresos} onChange={handleChange} className="form-control" />
+                  <input id="ingresos" name="ingresos" type="number" min="0" value={form.ingresos} onChange={handleChange} className="form-control" aria-invalid={!!errors.ingresos} aria-describedby={errors.ingresos ? 'ingresos-error' : undefined} />
+                  {errors.ingresos && <small id="ingresos-error" className="text-danger">{errors.ingresos}</small>}
                 </div>
               </div>
             </fieldset>
@@ -255,10 +264,10 @@ export default function Solicitar() {
           </form>
         </div>
 
-        {/* Imagen a la derecha (oculta en pantallas muy pequeñas) */}
-        <div className="col-12 col-md-6 mt-4 mt-md-0">
-          <div className="h-100 d-flex align-items-center justify-content-center">
-            <img src={illustration} alt="Crédito" className="img-fluid rounded shadow-sm" style={{ maxHeight: 520, objectFit: 'cover' }} />
+        {/* Imagen a la derecha que ocupa toda la mitad de la página */}
+        <div className="col-12 col-md-6 mt-4 mt-md-0 p-0">
+          <div className="h-100 w-100">
+            <img src={illustration} alt="Crédito" className="w-100 h-100" style={{ objectFit: 'cover', display: 'block' }} />
           </div>
         </div>
       </div>

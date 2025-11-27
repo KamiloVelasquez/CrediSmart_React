@@ -1,11 +1,12 @@
 import React from "react";
 import CreditCard from "../components/CreditCard";
+import GreenBanner from "../components/GreenBanner"; // IMPORTACIÓN DEL BANNER
 import { creditos } from "../../data/creditos";
 
 export default function Home() {
   return (
     <>
-      {/* Carrusel (igual estructura visual que tu HTML original) */}
+      {/* Carrusel (igual estructura visual que tu HTML original)
       <div id="carouselExampleCaptions" className="carousel slide" data-bs-ride="carousel">
         <div className="carousel-indicators">
           <button type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide-to="0" className="active" aria-current="true"></button>
@@ -56,7 +57,7 @@ export default function Home() {
           <span className="carousel-control-next-icon" aria-hidden="true"></span>
           <span className="visually-hidden">Siguiente</span>
         </button>
-      </div>
+      </div> */}
 
       {/* Hero */}
       <header className="p-5 text-center custom-bg-primary">
@@ -65,6 +66,9 @@ export default function Home() {
           <p className="lead">Tasas competitivas, aprobación rápida y sin trámites complicados</p>
         </div>
       </header>
+
+      {/* 🟢 ZONA DEL BANNER PUBLICITARIO INTERACTIVO (Marcada en rojo en tu imagen) */}
+      <GreenBanner />
 
       {/* Catálogo (dinámico con .map) */}
       <main className="container custom-products-section py-3">
