@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { creditos } from "../../data/creditos";
 import illustration from "../IMAGES/Crédito Libre Inversión.png";
 import Swal from 'sweetalert2'
@@ -21,32 +21,23 @@ export default function Solicitar() {
   });
 
   const [errors, setErrors] = useState({});
-  const [cuota, setCuota] = useState(null);
+  // cuota es un valor derivado calculado con useMemo (evita setState en efectos)
   const [mensaje, setMensaje] = useState("");
   const [showResumen, setShowResumen] = useState(false);
 
-  // recalcular cuota cuando cambien monto, plazo o tipoCredito
-  useEffect(() => {
+  // calcular la cuota de forma derivada con useMemo
+  const cuota = React.useMemo(() => {
     const monto = Number(form.monto);
     const plazo = Number(form.plazo);
-    if (!monto || !plazo) {
-      setCuota(null);
-      return;
-    }
+    if (!monto || !plazo) return null;
 
-    // obtener tasa (en creditos.tasa interpretada como porcentaje mensual)
     const producto = creditos.find((c) => c.nombre === form.tipoCredito);
     const tasaMensual = producto ? Number(producto.tasa) / 100 : 0.02; // fallback 2% mensual
 
-    // fórmula cuota: (m * i) / (1 - (1+i)^-n)
     const i = tasaMensual;
     const n = plazo;
     const cuotaCalc = (monto * i) / (1 - Math.pow(1 + i, -n));
-    if (Number.isFinite(cuotaCalc)) {
-      setCuota(Math.round(cuotaCalc));
-    } else {
-      setCuota(null);
-    }
+    return Number.isFinite(cuotaCalc) ? Math.round(cuotaCalc) : null;
   }, [form.monto, form.plazo, form.tipoCredito]);
 
   // validaciones en tiempo real (al cambiar campos)
@@ -89,7 +80,7 @@ export default function Solicitar() {
       ingresos: ""
     });
     setErrors({});
-    setCuota(null);
+    // cuota es derivada ahora (useMemo) — no necesitamos setCuota
     setShowResumen(false);
     setMensaje("");
   }
