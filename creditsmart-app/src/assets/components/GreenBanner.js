@@ -74,7 +74,7 @@ const GreenBanner = () => {
           ¡OFERTA EXCLUSIVA! 🏦 Tasa Fija garantizada.
         </div>
         <p>
-          Financia tu vehículo o vivienda con el **Plazo más flexible del mercado** y recibe un bono especial.
+          Financia tu vehículo o vivienda con el <strong>Plazo más flexible del mercado</strong> y recibe un bono especial.
         </p>
         
         <button style={styles.button(isHovered)} onClick={handleButtonClick}>
