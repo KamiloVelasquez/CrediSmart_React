@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from "react";
 import CreditCard from "../components/CreditCard";
-import { creditos } from "../data/creditos";
+import { creditos } from "../../data/creditos";
 
 export default function Simulador() {
   const [query, setQuery] = useState("");

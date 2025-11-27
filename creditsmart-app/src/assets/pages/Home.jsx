@@ -1,6 +1,6 @@
 import React from "react";
 import CreditCard from "../components/CreditCard";
-import { creditos } from "../data/creditos";
+import { creditos } from "../../data/creditos";
 
 export default function Home() {
   return (

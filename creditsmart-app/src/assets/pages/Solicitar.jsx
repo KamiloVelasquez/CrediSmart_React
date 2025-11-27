@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { creditos } from "../data/creditos";
+import { creditos } from "../../data/creditos";
 
 const solicitudesMemoria = []; // almacenamiento temporal en memoria
 
