@@ -6,7 +6,7 @@
 **Proyecto:** Actividad 1 – Diseño de Interfaces Web
 **Tecnología:** React.js
 
->>>> Repositorio GitHub:https://github.com/KamiloVelasquez/Actividad_3
+>>>> Repositorio GitHub: https://github.com/KamiloVelasquez/CrediSmart_React.git
 
 ---
 
@@ -120,7 +120,7 @@ CREDITSMART_REACT/
 
 1. Clona el repositorio:
    ```bash
-   git clone https://github.com/KamiloVelasquez/Actividad_3.git
+   git clone https://github.com/KamiloVelasquez/CrediSmart_React.git
    cd Actividad_3
    ```
 
