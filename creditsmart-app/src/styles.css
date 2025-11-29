@@ -1,29 +1,3 @@
-/* Carrusel: ancho completo y altura adaptable */
-#carouselExampleCaptions {
-  width: 100%;
-}
-
-#carouselExampleCaptions .carousel-item img {
-  display: block;
-  width: 100%;
-  height: 100px;        /* Altura por defecto para pantallas pequeñas */
-  max-height: 920px;    /* Límite superior */
-  object-fit: cover;    /* Ajusta y recorta la imagen sin deformarla */
-}
-
-/* Altura media para pantallas pequeñas/medianas */
-@media (min-width: 576px) {
-  #carouselExampleCaptions .carousel-item img {
-    height: 340px;
-  }
-}
-
-/* Altura mayor para pantallas grandes */
-@media (min-width: 992px) {
-  #carouselExampleCaptions .carousel-item img {
-    height: 420px;
-  }
-}
 
 /* Colores personalizados de header */
 .custom-bg-primary {
@@ -86,9 +60,14 @@
   background-color: #15803d; /* verde más oscuro al pasar el mouse */
 }
 
-.btn-outline-primary{
+.btn-success-2{
   color: rgb(36, 97, 36); /* verde corporativo */
   border-color: rgb(36, 97, 36); /* borde verde */
+}
+
+.btn-success-2:hover {
+  background-color: #15803d; /* verde más oscuro al pasar el mouse */
+  border-color: #15803d;
 }
 
 .custom-bg-primary {
@@ -105,4 +84,37 @@
     color: rgb(36, 97, 36);
     padding-top: 4rem;
     padding-bottom: 4rem;
+}
+
+/* Estilo del botón "Enviar Solicitud" en SweetAlert2 */
+.swal-btn-enviar {
+  background-color: rgb(36, 97, 36) !important;
+  color: white !important;
+  border: none !important;
+  padding: 8px 30px !important;
+  border-radius: 8px !important;
+  cursor: pointer !important;
+  font-size: 16px !important;
+  transition: background-color 0.3s ease !important;
+  box-shadow: none !important;
+}
+
+.swal-btn-enviar:hover {
+  background-color: #15803d !important;
+}
+
+.swal2-styled {
+  background-color: rgb(36, 97, 36) !important;
+  color: white !important;
+  border: none !important;
+  padding: 8px 30px !important;
+  border-radius: 8px !important;
+  cursor: pointer !important;
+  font-size: 16px !important;
+  transition: background-color 0.3s ease !important;
+  box-shadow: none !important;
+}
+
+.swal2-styled:hover {
+  background-color: #15803d !important;
 }

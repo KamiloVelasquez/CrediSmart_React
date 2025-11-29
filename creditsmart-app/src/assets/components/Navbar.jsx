@@ -6,7 +6,7 @@ export default function Navbar() {
     <nav className="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
       <div className="container">
         <Link className="navbar-brand d-flex align-items-center" to="/">
-          <img src={logo} alt="Logo" height="64" className="me-3" />
+          <img src={logo} alt="Logo" height="94" className="me-3" />
           <span className="text-creditsmart fw-bold">CreditSmart</span>
         </Link>
 

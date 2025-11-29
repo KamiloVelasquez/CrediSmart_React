@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { creditos } from "../../data/creditos";
-import illustration from "../IMAGES/Crédito Libre Inversión.png";
+import illustration from "../IMAGES/Credito_Libre_Inversion.png";
 import Swal from 'sweetalert2'
 
 const solicitudesMemoria = []; // almacenamiento temporal en memoria
@@ -100,9 +100,14 @@ export default function Solicitar() {
       const first = Object.keys(newErrors)[0];
       document.getElementById(first)?.focus();
       Swal.fire({
-        icon: "error",
-        title: "¡Uy!",
-        text: "Por favor completa los campos obligatorios.",
+        icon: 'error',
+        title: '¡Uy!',
+        text: 'Por favor completa los campos obligatorios.',
+        confirmButtonText: 'OK',
+        customClass: {
+          confirmButton: 'swal-btn-enviar', // Clase styles.css para el botón
+        },
+        buttonsStyling: false, // Desactiva los estilos por defecto de SweetAlert2
       });
       return;
     }
@@ -247,7 +252,7 @@ export default function Solicitar() {
             )}
 
             <div className="d-flex justify-content-between">
-              <button type="button" className="btn btn-outline-primary" onClick={limpiarForm}>Limpiar</button>
+              <button type="button" className="btn btn-success-2" onClick={limpiarForm}>Limpiar</button>
               <button type="submit" className="btn btn-success">Enviar Solicitud</button>
             </div>
 
@@ -255,10 +260,10 @@ export default function Solicitar() {
           </form>
         </div>
 
-        {/* Imagen a la derecha que ocupa toda la mitad de la página */}
+        {/* Imagen a la derecha */}
         <div className="col-12 col-md-6 mt-4 mt-md-0 p-0">
           <div className="h-100 w-100">
-            <img src={illustration} alt="Crédito" className="w-100 h-100" style={{ objectFit: 'cover', display: 'block' }} />
+            <img src={illustration} alt="Crédito" className="w-100 h-100" style={{ objectFit: 'cover', display: 'block', borderRadius: 20 }} />
           </div>
         </div>
       </div>

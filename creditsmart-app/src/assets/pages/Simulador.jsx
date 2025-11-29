@@ -72,7 +72,7 @@ export default function Simulador() {
         </div>
 
         <div className="text-end mt-3">
-          <button type="button" className="btn btn-outline-primary me-2" onClick={limpiarFiltros}>
+          <button type="button" className="btn btn-success-2" onClick={limpiarFiltros}>
             Limpiar
           </button>
         </div>
