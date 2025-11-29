@@ -121,7 +121,7 @@ CREDITSMART_REACT/
 1. Clona el repositorio:
    ```bash
    git clone https://github.com/KamiloVelasquez/CrediSmart_React.git
-   cd Actividad_3
+   cd CrediSmart_React
    ```
 
 2. Instala las dependencias:
