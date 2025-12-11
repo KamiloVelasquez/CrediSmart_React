@@ -1,12 +1,33 @@
-import React, { useState } from "react";
-import { creditos } from "../../data/creditos";
-import illustration from "../IMAGES/Credito_Libre_Inversion.png";
-import Swal from 'sweetalert2'
+import React, { useState, useMemo } from "react";
+import { creditos } from "../../data/creditos"; 
+import illustration from "../IMAGES/Credito_Libre_Inversion.png"; 
+import Swal from 'sweetalert2';
+import { db } from "../../firebase/config"; 
+import { collection, addDoc } from "firebase/firestore";
 
-const solicitudesMemoria = []; // almacenamiento temporal en memoria
+
+const validateForm = (form) => {
+  let errors = {};
+  if (!form.nombre) errors.nombre = "El nombre es obligatorio.";
+  if (!form.cedula) errors.cedula = "La cédula es obligatoria.";
+  if (!form.email || !/^\S+@\S+\.\S+$/.test(form.email)) errors.email = "El email no es válido.";
+  if (!form.telefono) errors.telefono = "El teléfono es obligatorio.";
+  if (!form.tipoCredito) errors.tipoCredito = "Debes seleccionar un tipo de crédito.";
+  
+  const montoNum = Number(form.monto);
+  const plazoNum = Number(form.plazo);
+  const ingresosNum = Number(form.ingresos);
+
+  if (!montoNum || isNaN(montoNum) || montoNum <= 0) errors.monto = "Monto inválido.";
+  if (!plazoNum || isNaN(plazoNum) || plazoNum <= 0) errors.plazo = "Plazo inválido.";
+  if (!ingresosNum || isNaN(ingresosNum) || ingresosNum <= 0) errors.ingresos = "Ingresos inválidos.";
+
+  return errors;
+};
+
 
 export default function Solicitar() {
-  const [form, setForm] = useState({
+  const initialState = {
     nombre: "",
     cedula: "",
     email: "",
@@ -18,253 +39,316 @@ export default function Solicitar() {
     empresa: "",
     cargo: "",
     ingresos: ""
-  });
-
+  };
+  
+  const [form, setForm] = useState(initialState);
   const [errors, setErrors] = useState({});
-  // cuota es un valor derivado calculado con useMemo (evita setState en efectos)
-  const [mensaje, setMensaje] = useState("");
   const [showResumen, setShowResumen] = useState(false);
 
-  // calcular la cuota de forma derivada con useMemo
-  const cuota = React.useMemo(() => {
+  // Maneja el cambio de los inputs
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setForm(prev => ({ ...prev, [name]: value }));
+    // Limpiar error específico al escribir
+    if (errors[name]) {
+      setErrors(prev => ({ ...prev, [name]: undefined }));
+    }
+  };
+
+  // Limpia todo el formulario
+  const limpiarForm = () => {
+    setForm(initialState);
+    setErrors({});
+    setShowResumen(false);
+  };
+
+  // Cálculo de cuota usando useMemo para optimización
+  const cuota = useMemo(() => {
     const monto = Number(form.monto);
     const plazo = Number(form.plazo);
     if (!monto || !plazo) return null;
 
     const producto = creditos.find((c) => c.nombre === form.tipoCredito);
-    const tasaMensual = producto ? Number(producto.tasa) / 100 : 0.02; // fallback 2% mensual
+    // Tasa mensual (asumimos que la tasa en creditos.js es anual en porcentaje)
+    const tasaMensual = producto ? Number(producto.tasa) / 100 : null; 
+
+    if (!tasaMensual) return null;
 
     const i = tasaMensual;
     const n = plazo;
-    const cuotaCalc = (monto * i) / (1 - Math.pow(1 + i, -n));
-    return Number.isFinite(cuotaCalc) ? Math.round(cuotaCalc) : null;
+    const cuota = monto * (i * Math.pow(1 + i, n)) / (Math.pow(1 + i, n) - 1);
+    
+    if (isNaN(cuota) || !isFinite(cuota)) return null;
+
+    return Math.round(cuota);
   }, [form.monto, form.plazo, form.tipoCredito]);
 
-  // validaciones en tiempo real (al cambiar campos)
-  function handleChange(e) {
-    const { id, value } = e.target;
-    setForm((p) => ({ ...p, [id]: value }));
 
-    // validación básica
-    setErrors((prev) => {
-      const next = { ...prev };
-      if (!value) next[id] = "Campo requerido";
-      else delete next[id];
+  // Muestra el resumen (calcula la cuota)
+  const handleSimular = () => {
+    const simErrors = {};
+    if (!form.tipoCredito) simErrors.tipoCredito = "Selecciona un tipo de crédito.";
+    if (!Number(form.monto)) simErrors.monto = "Ingresa un monto válido.";
+    if (!Number(form.plazo)) simErrors.plazo = "Ingresa un plazo válido.";
 
-      // email valid simple
-      if (id === "email" && value) {
-        const ok = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
-        if (!ok) next.email = "Email inválido";
-        else delete next.email;
-      }
-
-      return next;
-    });
-
-    // si el usuario modifica monto/plazo/tipo, mostramos resumen en vivo
-    setShowResumen(true);
-  }
-
-  function limpiarForm() {
-    setForm({
-      nombre: "",
-      cedula: "",
-      email: "",
-      telefono: "",
-      tipoCredito: "",
-      monto: "",
-      plazo: "",
-      destino: "",
-      empresa: "",
-      cargo: "",
-      ingresos: ""
-    });
-    setErrors({});
-    // cuota es derivada ahora (useMemo) — no necesitamos setCuota
-    setShowResumen(false);
-    setMensaje("");
-  }
-
-  function handleSubmit(e) {
-    e.preventDefault();
-
-    // validación final
-    const required = ["nombre", "email", "tipoCredito", "monto", "plazo"];
-    const newErrors = {};
-    required.forEach((f) => {
-      if (!form[f]) newErrors[f] = "Campo requerido";
-    });
-    if (Object.keys(newErrors).length) {
-      setErrors(newErrors);
-      // focus first field with error for better UX
-      const first = Object.keys(newErrors)[0];
-      document.getElementById(first)?.focus();
-      Swal.fire({
-        icon: 'error',
-        title: '¡Uy!',
-        text: 'Por favor completa los campos obligatorios.',
-        confirmButtonText: 'OK',
-        customClass: {
-          confirmButton: 'swal-btn-enviar', // Clase styles.css para el botón
-        },
-        buttonsStyling: false, // Desactiva los estilos por defecto de SweetAlert2
-      });
-      return;
+    if (Object.keys(simErrors).length > 0) {
+        setErrors(prev => ({ ...prev, ...simErrors }));
+        Swal.fire('Advertencia', 'Completa los campos de simulación para ver la cuota.', 'warning');
+        return;
     }
 
-    // guardar en memoria
-    solicitudesMemoria.push({
+    if (cuota) {
+        setShowResumen(true);
+    } else {
+        setShowResumen(false);
+        Swal.fire('Advertencia', 'No fue posible calcular la cuota. Verifica los límites del crédito.', 'warning');
+    }
+  };
+
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    
+    // 1. VALIDACIÓN COMPLETA
+    const validationErrors = validateForm(form);
+    if (Object.keys(validationErrors).filter(key => validationErrors[key]).length > 0) {
+      setErrors(validationErrors);
+      Swal.fire('Advertencia', 'Por favor, completa correctamente los campos obligatorios.', 'warning');
+      return;
+    }
+    
+    // Asegurar que la cuota se calculó antes de enviar
+    if (!cuota) {
+        Swal.fire('Advertencia', 'Debes simular la cuota antes de enviar la solicitud.', 'warning');
+        return;
+    }
+
+    // 2. PREPARACIÓN DE DATOS (Asegurar tipos correctos para Firestore)
+    const dataToSave = {
       ...form,
-      cuota,
-      fecha: new Date().toISOString()
-    });
+      monto: Number(form.monto),   
+      plazo: Number(form.plazo),   
+      ingresos: Number(form.ingresos), 
+      fechaSolicitud: new Date(), 
+      cuotaEstimada: cuota, 
+      // se puede añadir más campos como 'estado: "Pendiente"', 'tasaAplicada: producto.tasa', etc.
+    };
 
-    // Mensaje de éxito (sweetalert2)
-      Swal.fire({
-        title: "Solicitud enviada con éxito ✔",
-        icon: "success",
-        draggable: true
-      });
-
-
-    // limpiar automáticamente después de enviar
-    setTimeout(() => {
+    // 3. ENVÍO A FIRESTORE
+    try {
+      const docRef = await addDoc(collection(db, "solicitudes"), dataToSave); 
+      
+      // Éxito
+      console.log("Documento escrito exitosamente con ID: ", docRef.id);
+      
+      Swal.fire(
+        '¡Solicitud Enviada!',
+        `Tu solicitud fue registrada con el ID: ${docRef.id}.`,
+        'success'
+      );
+      
       limpiarForm();
-    }, 800);
+      
+    } catch (error) {
+      
+      console.error("FIREBASE ERROR: Error al añadir documento a Firestore.", error);
+      
+      Swal.fire(
+        'Error de Envío',
+        `Ocurrió un error al enviar tu solicitud: ${error.message}. Esto es CASI SIEMPRE un problema de las Reglas de Seguridad de Firestore.`,
+        'error'
+      );
+    }
+  };
 
-    // borrar mensaje al rato
-    setTimeout(() => setMensaje(""), 5000);
-  }
-
+  // Estructura de JSX con validaciones y manejo de eventos
   return (
     <main className="container py-5">
-      <h1 className="text-center mb-5 text-green">Solicitud de Crédito</h1>
+      <h1 className="custom-products-section text-success text-center">
+        Solicita tu Crédito
+      </h1>
 
-      <div className="row gx-5 align-items-stretch" style={{ minHeight: '72vh' }}>
-        {/* Formulario a la izquierda */}
-        <div className="col-12 col-md-6">
-          <form className="bg-white p-4 rounded shadow-sm" onSubmit={handleSubmit} noValidate>
-            {/* Datos personales */}
-            <fieldset className="mb-4">
-              <legend className="fw-bold text-green">Datos Personales</legend>
-              <div className="row g-3">
-                <div className="col-md-6">
-                  <label htmlFor="nombre" className="form-label">Nombre completo</label>
-                  <input id="nombre" name="nombre" value={form.nombre} onChange={handleChange} className="form-control" aria-invalid={!!errors.nombre} aria-describedby={errors.nombre ? 'nombre-error' : undefined} />
-                  {errors.nombre && <small id="nombre-error" className="text-danger">{errors.nombre}</small>}
-                </div>
+      <div className="row">
+        <div className="col-12 col-md-6 bg-light p-4 rounded shadow-lg">
+          <form onSubmit={handleSubmit}>
+            
+            {/* Campos de datos personales */}
+            <fieldset className="border p-3 mb-4 rounded">
+              <legend className="float-none w-auto px-2 fs-6 fw-bold">
+                Datos Personales
+              </legend>
+              <div className="mb-3">
+                <label htmlFor="nombre" className="form-label">Nombre Completo</label>
+                <input
+                  type="text"
+                  className={`form-control ${errors.nombre ? "is-invalid" : ""}`}
+                  id="nombre"
+                  name="nombre"
+                  value={form.nombre}
+                  onChange={handleChange}
+                />
+                {errors.nombre && <small className="text-danger">{errors.nombre}</small>}
+              </div>
+              {/* ... otros campos de datos personales (cedula, email, telefono) con sus validaciones ... */}
+              <div className="mb-3">
+                <label htmlFor="cedula" className="form-label">Cédula</label>
+                <input
+                  type="text"
+                  className={`form-control ${errors.cedula ? "is-invalid" : ""}`}
+                  id="cedula"
+                  name="cedula"
+                  value={form.cedula}
+                  onChange={handleChange}
+                />
+                {errors.cedula && <small className="text-danger">{errors.cedula}</small>}
+              </div>
 
-                <div className="col-md-6">
-                  <label htmlFor="cedula" className="form-label">Cédula</label>
-                  <input id="cedula" name="cedula" type="text" value={form.cedula} onChange={handleChange} className="form-control" aria-invalid={!!errors.cedula} aria-describedby={errors.cedula ? 'cedula-error' : undefined} />
-                  {errors.cedula && <small id="cedula-error" className="text-danger">{errors.cedula}</small>}
-                </div>
-
-                <div className="col-md-6">
+              <div className="row">
+                <div className="col-md-6 mb-3">
                   <label htmlFor="email" className="form-label">Email</label>
-                  <input id="email" name="email" type="email" value={form.email} onChange={handleChange} className="form-control" aria-invalid={!!errors.email} aria-describedby={errors.email ? 'email-error' : undefined} />
-                  {errors.email && <small id="email-error" className="text-danger">{errors.email}</small>}
+                  <input
+                    type="email"
+                    className={`form-control ${errors.email ? "is-invalid" : ""}`}
+                    id="email"
+                    name="email"
+                    value={form.email}
+                    onChange={handleChange}
+                  />
+                  {errors.email && <small className="text-danger">{errors.email}</small>}
                 </div>
-
-                <div className="col-md-6">
+                <div className="col-md-6 mb-3">
                   <label htmlFor="telefono" className="form-label">Teléfono</label>
-                  <input id="telefono" name="telefono" value={form.telefono} onChange={handleChange} className="form-control" aria-invalid={!!errors.telefono} aria-describedby={errors.telefono ? 'telefono-error' : undefined} />
-                  {errors.telefono && <small id="telefono-error" className="text-danger">{errors.telefono}</small>}
+                  <input
+                    type="tel"
+                    className={`form-control ${errors.telefono ? "is-invalid" : ""}`}
+                    id="telefono"
+                    name="telefono"
+                    value={form.telefono}
+                    onChange={handleChange}
+                  />
+                  {errors.telefono && <small className="text-danger">{errors.telefono}</small>}
                 </div>
               </div>
+              
             </fieldset>
 
-            {/* Datos del crédito */}
-            <fieldset className="mb-4">
-              <legend className="fw-bold text-green">Datos del Crédito</legend>
-              <div className="row g-3">
-                <div className="col-md-6">
-                  <label htmlFor="tipoCredito" className="form-label">Tipo de crédito</label>
-                  <select id="tipoCredito" name="tipoCredito" value={form.tipoCredito} onChange={handleChange} className="form-select" aria-invalid={!!errors.tipoCredito} aria-describedby={errors.tipoCredito ? 'tipoCredito-error' : undefined}>
-                    <option value="">Seleccione...</option>
-                    {creditos.map((c) => (
-                      <option key={c.id} value={c.nombre}>{c.nombre}</option>
-                    ))}
-                  </select>
-                  {errors.tipoCredito && <small id="tipoCredito-error" className="text-danger">{errors.tipoCredito}</small>}
-                </div>
+            {/* Detalles del Crédito y Simulación */}
+            <fieldset className="border p-3 mb-4 rounded">
+              <legend className="float-none w-auto px-2 fs-6 fw-bold">
+                Detalles del Crédito
+              </legend>
+              <div className="mb-3">
+                <label htmlFor="tipoCredito" className="form-label">Tipo de Crédito</label>
+                <select
+                  className={`form-select ${errors.tipoCredito ? "is-invalid" : ""}`}
+                  id="tipoCredito"
+                  name="tipoCredito"
+                  value={form.tipoCredito}
+                  onChange={handleChange}
+                >
+                  <option value="">Selecciona un tipo</option>
+                  {creditos.map((c) => (
+                    <option key={c.id} value={c.nombre}>
+                      {c.nombre}
+                    </option>
+                  ))}
+                </select>
+                {errors.tipoCredito && <small className="text-danger">{errors.tipoCredito}</small>}
+              </div>
 
-                <div className="col-md-6">
-                  <label htmlFor="monto" className="form-label">Monto solicitado ($)</label>
-                  <input id="monto" name="monto" type="number" min="0" value={form.monto} onChange={handleChange} className="form-control" aria-invalid={!!errors.monto} aria-describedby={errors.monto ? 'monto-error' : undefined} />
-                  {errors.monto && <small id="monto-error" className="text-danger">{errors.monto}</small>}
+              <div className="row">
+                <div className="col-md-4 mb-3">
+                  <label htmlFor="monto" className="form-label">Monto Solicitado ($)</label>
+                  <input
+                    type="number"
+                    className={`form-control ${errors.monto ? "is-invalid" : ""}`}
+                    id="monto"
+                    name="monto"
+                    value={form.monto}
+                    onChange={handleChange}
+                  />
+                  {errors.monto && <small className="text-danger">{errors.monto}</small>}
                 </div>
-
-                <div className="col-md-6">
-                  <label htmlFor="plazo" className="form-label">Plazo en meses</label>
-                  <select id="plazo" name="plazo" value={form.plazo} onChange={handleChange} className="form-select" aria-invalid={!!errors.plazo} aria-describedby={errors.plazo ? 'plazo-error' : undefined}>
-                    <option value="">Seleccione...</option>
-                    <option value="12">12</option>
-                    <option value="24">24</option>
-                    <option value="36">36</option>
-                    <option value="48">48</option>
-                    <option value="60">60</option>
-                  </select>
-                  {errors.plazo && <small id="plazo-error" className="text-danger">{errors.plazo}</small>}
+                <div className="col-md-4 mb-3">
+                  <label htmlFor="plazo" className="form-label">Plazo (meses)</label>
+                  <input
+                    type="number"
+                    className={`form-control ${errors.plazo ? "is-invalid" : ""}`}
+                    id="plazo"
+                    name="plazo"
+                    value={form.plazo}
+                    onChange={handleChange}
+                  />
+                  {errors.plazo && <small className="text-danger">{errors.plazo}</small>}
                 </div>
-
-                <div className="col-12">
-                  <label htmlFor="destino" className="form-label">Destino del crédito</label>
-                  <textarea id="destino" name="destino" value={form.destino} onChange={handleChange} rows="2" className="form-control" placeholder="Ej: Compra de vehículo, remodelación, etc." aria-invalid={!!errors.destino} aria-describedby={errors.destino ? 'destino-error' : undefined}></textarea>
-                  {errors.destino && <small id="destino-error" className="text-danger">{errors.destino}</small>}
+                <div className="col-md-4 mb-3 d-flex align-items-end">
+                    <button type="button" className="btn btn-sm btn-outline-success w-100" onClick={handleSimular}>Simular Cuota</button>
                 </div>
               </div>
-            </fieldset>
 
-            {/* Datos laborales */}
-            <fieldset className="mb-4">
-              <legend className="fw-bold text-green">Datos Laborales</legend>
-              <div className="row g-3">
-                <div className="col-md-6">
-                  <label htmlFor="empresa" className="form-label">Empresa donde trabaja</label>
-                  <input id="empresa" name="empresa" value={form.empresa} onChange={handleChange} className="form-control" aria-invalid={!!errors.empresa} aria-describedby={errors.empresa ? 'empresa-error' : undefined} />
-                  {errors.empresa && <small id="empresa-error" className="text-danger">{errors.empresa}</small>}
-                </div>
+              {/* ... Campos de Empleo e Ingresos ... */}
+              <div className="mb-3">
+                <label htmlFor="empresa" className="form-label">Empresa donde trabaja</label>
+                <input type="text" className="form-control" id="empresa" name="empresa" value={form.empresa} onChange={handleChange} />
+              </div>
 
-                <div className="col-md-6">
+              <div className="row">
+                <div className="col-md-6 mb-3">
                   <label htmlFor="cargo" className="form-label">Cargo</label>
-                  <input id="cargo" name="cargo" value={form.cargo} onChange={handleChange} className="form-control" aria-invalid={!!errors.cargo} aria-describedby={errors.cargo ? 'cargo-error' : undefined} />
-                  {errors.cargo && <small id="cargo-error" className="text-danger">{errors.cargo}</small>}
+                  <input type="text" className="form-control" id="cargo" name="cargo" value={form.cargo} onChange={handleChange} />
                 </div>
-
-                <div className="col-md-6">
-                  <label htmlFor="ingresos" className="form-label">Ingresos mensuales ($)</label>
-                  <input id="ingresos" name="ingresos" type="number" min="0" value={form.ingresos} onChange={handleChange} className="form-control" aria-invalid={!!errors.ingresos} aria-describedby={errors.ingresos ? 'ingresos-error' : undefined} />
-                  {errors.ingresos && <small id="ingresos-error" className="text-danger">{errors.ingresos}</small>}
+                <div className="col-md-6 mb-3">
+                  <label htmlFor="ingresos" className="form-label">Ingresos Mensuales ($)</label>
+                  <input
+                    type="number"
+                    className={`form-control ${errors.ingresos ? "is-invalid" : ""}`}
+                    id="ingresos"
+                    name="ingresos"
+                    value={form.ingresos}
+                    onChange={handleChange}
+                  />
+                  {errors.ingresos && <small className="text-danger">{errors.ingresos}</small>}
                 </div>
               </div>
             </fieldset>
 
             {/* Resumen y cuota */}
-            {showResumen && (
-              <div className="mb-3">
-                <h6 className="fw-bold">Resumen (preliminar)</h6>
-                <p className="mb-1"><strong>Tipo:</strong> {form.tipoCredito || "-"}</p>
-                <p className="mb-1"><strong>Monto:</strong> {form.monto ? `$${Number(form.monto).toLocaleString()}` : "-"}</p>
-                <p className="mb-1"><strong>Plazo:</strong> {form.plazo ? `${form.plazo} meses` : "-"}</p>
-                <p className="mb-1"><strong>Cuota estimada:</strong> {cuota ? `$${cuota.toLocaleString()} / mes` : "—"}</p>
+            {showResumen && cuota && (
+              <div className="mb-3 p-3 bg-white rounded shadow-sm border-start border-4 border-success">
+                <h6 className="fw-bold text-success">Resumen de Simulación</h6>
+                <p className="mb-1"><strong>Tipo:</strong> {form.tipoCredito}</p>
+                <p className="mb-1"><strong>Monto:</strong> ${Number(form.monto).toLocaleString()}</p>
+                <p className="mb-1"><strong>Plazo:</strong> {form.plazo} meses</p>
+                <hr className="my-2" />
+                <h5 className="mb-0 text-success"><strong>Cuota estimada:</strong> ${cuota.toLocaleString()} / mes</h5>
+              </div>
+            )}
+            
+            {/* Mensaje de advertencia si la simulación falló */}
+            {!cuota && showResumen && (
+              <div className="alert alert-warning">
+                No fue posible calcular la cuota. Revisa el tipo, monto y plazo.
               </div>
             )}
 
-            <div className="d-flex justify-content-between">
-              <button type="button" className="btn btn-success-2" onClick={limpiarForm}>Limpiar</button>
-              <button type="submit" className="btn btn-success">Enviar Solicitud</button>
+
+            <div className="d-flex justify-content-between mt-4">
+              <button type="button" className="btn btn-outline-success" onClick={limpiarForm}>Limpiar Formulario</button>
+              <button 
+                type="submit" 
+                className="btn btn-success" 
+                disabled={!cuota} // Deshabilitar si la cuota no se ha simulado con éxito
+              >
+                Enviar Solicitud
+              </button>
             </div>
 
-            {mensaje && <div className="mt-3 alert alert-success">{mensaje}</div>}
           </form>
         </div>
 
         {/* Imagen a la derecha */}
-        <div className="col-12 col-md-6 mt-4 mt-md-0 p-0">
-          <div className="h-100 w-100">
-            <img src={illustration} alt="Crédito" className="w-100 h-100" style={{ objectFit: 'cover', display: 'block', borderRadius: 20 }} />
-          </div>
+        <div className="col-12 col-md-6 mt-4 mt-md-0 p-0 d-flex align-items-center justify-content-center">
+          <img src={illustration} alt="Ilustración de crédito" className="img-fluid rounded" />
         </div>
       </div>
     </main>
