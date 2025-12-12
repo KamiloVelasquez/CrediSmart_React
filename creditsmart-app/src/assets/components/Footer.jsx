@@ -1,3 +1,5 @@
+// Footer.jsx (Actualizado)
+
 import { Link } from "react-router-dom";
 
 export default function Footer() {
@@ -18,6 +20,7 @@ export default function Footer() {
             <ul className="list-unstyled small">
               <li><Link to="/" className="text-muted text-decoration-none">Catálogo</Link></li>
               <li><Link to="/simulador" className="text-muted text-decoration-none">Simulador</Link></li>
+              <li><Link to="/solicitudes" className="text-muted text-decoration-none">Listado Solicitudes</Link></li>
               <li><Link to="/nosotros" className="text-muted text-decoration-none">Nosotros</Link></li>
               <li><Link to="/solicitar" className="text-muted text-decoration-none">Solicitar crédito</Link></li>
             </ul>

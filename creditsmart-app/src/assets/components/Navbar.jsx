@@ -18,6 +18,10 @@ export default function Navbar() {
           <ul className="navbar-nav me-auto">
             <li><Link className="nav-link" to="/">Catálogo</Link></li>
             <li><Link className="nav-link" to="/simulador">Simulador</Link></li>
+            
+            {/* INSERCIÓN DEL ENLACE A SOLICITUDES */}
+            <li><Link className="nav-link" to="/solicitudes">Solicitudes</Link></li>
+            
             <li><Link className="nav-link" to="/nosotros">Nosotros</Link></li>
           </ul>
 

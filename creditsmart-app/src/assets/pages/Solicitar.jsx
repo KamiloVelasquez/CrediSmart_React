@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from "react";
 import { creditos } from "../../data/creditos"; 
-import illustration from "../IMAGES/Credito_Libre_Inversion.png"; 
+import illustration from "../IMAGES/Credito_Libre_Inversion.png"; // ¡Verifica que esta ruta sea correcta!
 import Swal from 'sweetalert2';
 import { db } from "../../firebase/config"; 
 import { collection, addDoc } from "firebase/firestore";
@@ -126,8 +126,8 @@ export default function Solicitar() {
     // 2. PREPARACIÓN DE DATOS (Asegurar tipos correctos para Firestore)
     const dataToSave = {
       ...form,
-      monto: Number(form.monto),   
-      plazo: Number(form.plazo),   
+      monto: Number(form.monto), 
+      plazo: Number(form.plazo), 
       ingresos: Number(form.ingresos), 
       fechaSolicitud: new Date(), 
       cuotaEstimada: cuota, 
@@ -346,9 +346,18 @@ export default function Solicitar() {
           </form>
         </div>
 
-        {/* Imagen a la derecha */}
-        <div className="col-12 col-md-6 mt-4 mt-md-0 p-0 d-flex align-items-center justify-content-center">
-          <img src={illustration} alt="Ilustración de crédito" className="img-fluid rounded" />
+        {/* IMAGEN A LA DERECHA: MODIFICADA PARA CUBRIR EL ESPACIO */}
+        <div className="col-12 col-md-6 mt-4 mt-md-0 p-0 d-flex align-items-stretch">
+          <img 
+            src={illustration} 
+            alt="Ilustración de crédito" 
+            className="img-fluid rounded shadow" 
+            style={{ 
+              width: '100%', 
+              height: '100%', 
+              objectFit: 'cover' // CLAVE: Asegura que la imagen cubra todo el contenedor sin distorsionarse
+            }}
+          />
         </div>
       </div>
     </main>
