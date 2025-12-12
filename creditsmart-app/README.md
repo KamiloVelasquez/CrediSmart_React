@@ -1,12 +1,12 @@
+# CreditSmart – Cooperativa Financiera Digital
 
-#  CreditSmart – Cooperativa Financiera Digital
 **Versión:** v1.0
 **Desarrollado por:** Juan Camilo Velásquez Yepes
 **Institución:** IU Digital de Antioquia
 **Proyecto:** Actividad 1 – Diseño de Interfaces Web
 **Tecnología:** React.js
 
->>>> Repositorio GitHub: https://github.com/KamiloVelasquez/CrediSmart_React.git
+> > > > Repositorio GitHub: https://github.com/KamiloVelasquez/CrediSmart_React.git
 
 ---
 
@@ -14,7 +14,7 @@
 
 **CreditSmart** es una aplicación web moderna construida con **React.js**, diseñada para ayudar a los usuarios a entender y gestionar sus finanzas personales dentro de una cooperativa digital. A través de una interfaz intuitiva y responsiva, los usuarios pueden explorar opciones de créditos, ahorros e inversiones, recibir asesoría financiera y tomar decisiones más informadas.
 
-Este proyecto fue desarrollado como parte de la **Actividad 2** de la asignatura *Desarrollo de Aplicación Web Dinámica con React - CreditSmart*, aplicando principios de UX/UI, componentización, y diseño responsive con React.
+Este proyecto fue desarrollado como parte de la **Actividad 2** de la asignatura _Desarrollo de Aplicación Web Dinámica con React - CreditSmart_, aplicando principios de UX/UI, componentización, y diseño responsive con React.
 
 ---
 
@@ -25,6 +25,7 @@ Este proyecto fue desarrollado como parte de la **Actividad 2** de la asignatura
 - **Asesoría:** Página “Nosotros” con información sobre el equipo y servicios.
 - **Diseño Responsivo:** Adaptado a móviles, tablets y escritorio.
 - **Componentes Reutilizables:** Estructura modular con componentes como `Navbar`, `Footer`, `CreditCard`, etc.
+- **Integración con Firestore:** Gestión de solicitudes de crédito y listado de resultados.
 - **Seguridad y Confianza:** Interfaz limpia, profesional y centrada en la experiencia del usuario.
 
 ---
@@ -32,6 +33,7 @@ Este proyecto fue desarrollado como parte de la **Actividad 2** de la asignatura
 ## Capturas de Pantalla
 
 ### Vista de Escritorio
+
 ![Página principal](/creditsmart-app/src/assets/images/pantallazo_1.png)
 ![Página busqueda y credito](/creditsmart-app/src/assets/images/pantallazo_2.png)
 ![Página busqueda filtrada](/creditsmart-app/src/assets/images/pantallazo_3.png)
@@ -39,8 +41,17 @@ Este proyecto fue desarrollado como parte de la **Actividad 2** de la asignatura
 ![Página modal_2](/creditsmart-app/src/assets/images/pantallazo_5.png)
 
 ### Vista Móvil (Responsive)
+
 ![Página responsiva_1](/creditsmart-app/src/assets/images/pantallazo_6.png)
 ![Página responsiva_1](/creditsmart-app/src/assets/images/pantallazo_7.png)
+
+### implementacion de Firebase/Firestore como base de datos
+
+![Página responsiva_1](/creditsmart-app/src/assets/images/pantallazo_8.png)
+
+### implementacion de pagina solicitudes (listado de solicitudes)
+
+![Página responsiva_1](/creditsmart-app/src/assets/images/pantallazo_9.png)
 
 > **Diseño completamente responsivo**, compatible con dispositivos móviles, tabletas y escritorio.
 
@@ -53,6 +64,8 @@ Este proyecto fue desarrollado como parte de la **Actividad 2** de la asignatura
 - **CSS Modules / CSS Global** — Estilos personalizados y reutilizables.
 - **Componentes Funcionales + Hooks** — Arquitectura moderna de React.
 - **Rutas Simples (sin react-router)** — Navegación mediante importación directa de páginas.
+- **Firebase / Firestore** — Base de datos NoSQL utilizada para almacenar solicitudes de crédito.
+- **SweetAlert2** — Para notificaciones amigables y modales de éxito/error.
 - **Imágenes y Assets** — Organizados en `/src/assets/images/`.
 - **Eslint + Vite** — Configurados para desarrollo y calidad de código.
 
@@ -62,45 +75,49 @@ Este proyecto fue desarrollado como parte de la **Actividad 2** de la asignatura
 
 CREDITSMART_REACT/
 ├── public/
-│   └── index.html
+│   └── index.html
 ├── src/
-│   ├── assets/
-│   │   ├── components/
-│   │   │   ├── CreditCard.jsx
-│   │   │   ├── Footer.jsx
-│   │   │   ├── GreenBanner.jsx
-│   │   │   ├── Navbar.jsx
-│   │   │   └── ProductCard.jsx
-│   │   └── images/
-│   │       ├── consumo.png
-│   │       ├── Credito_Educativo.png
-│   │       ├── Credito_Libre_Inversion.png
-│   │       ├── Credito_Vehiculo.png
-│   │       ├── Credito_Vivienda.png
-│   │       ├── educativo.png
-│   │       ├── empresarial.png
-│   │       ├── libre.png
-│   │       ├── logo_CreditSmart.png
-│   │       ├── targeta_credito_1.png
-│   │       ├── targeta_credito_2.png
-│   │       ├── vehiculo.png
-│   │       └── vivienda.png
-│   │   └── react.svg
-│   │
-│   ├── pages/
-│   │   ├── Home.jsx
-│   │   ├── Nosotros.jsx
-│   │   ├── Simulador.jsx
-│   │   └── Solicitar.jsx
-│   │
-│   ├── data/
-│   │   └── App.css
-│   │   └── App.jsx
-│   │   └── index.css
-│   │   └── main.jsx
-│   │   └── styles.css
-│   │
-│   └── index.js (o main.jsx si usas Vite)
+│   ├── assets/
+│   │   ├── components/
+│   │   │   ├── CreditCard.jsx
+│   │   │   ├── Footer.jsx
+│   │   │   ├── GreenBanner.jsx
+│   │   │   ├── Navbar.jsx
+│   │   │   └── ProductCard.jsx
+│   │   └── images/
+│   │       ├── consumo.png
+│   │       ├── Credito_Educativo.png
+│   │       ├── Credito_Libre_Inversion.png
+│   │       ├── Credito_Vehiculo.png
+│   │       ├── Credito_Vivienda.png
+│   │       ├── educativo.png
+│   │       ├── empresarial.png
+│   │       ├── libre.png
+│   │       ├── logo_CreditSmart.png
+│   │       ├── targeta_credito_1.png
+│   │       ├── targeta_credito_2.png
+│   │       ├── vehiculo.png
+│   │       └── vivienda.png
+│   │   └── react.svg
+│   │
+│   ├── data/
+│   │   └── creditos.js <-- Archivo de datos de créditos
+│   │
+│   ├── pages/
+│   │   ├── Home.jsx
+│   │   ├── Nosotros.jsx
+│   │   ├── Simulador.jsx
+│   │   ├── Solicitar.jsx
+│   │   └── Solicitudes.jsx <-- Listado de solicitudes
+│   │
+│   ├── firebase/
+│   │   └── config.js <-- Configuración de Firestore
+│   │
+│   ├── App.css
+│   ├── App.jsx
+│   ├── index.css
+│   ├── main.jsx
+│   └── styles.css
 │
 ├── .gitignore
 ├── eslint.config.js
@@ -111,7 +128,6 @@ CREDITSMART_REACT/
 ├── vite.config.js
 └── tsconfig.json (si aplica)
 
-
 > **Nota:** El proyecto utiliza **Vite** como herramienta de construcción (según `vite.config.js` y `package.json`), lo cual permite un desarrollo rápido y eficiente.
 
 ---
@@ -119,20 +135,20 @@ CREDITSMART_REACT/
 ## Cómo Ejecutar el Proyecto
 
 1. Clona el repositorio:
-   ```bash
-   git clone https://github.com/KamiloVelasquez/CrediSmart_React.git
-   cd CrediSmart_React
-   ```
+      `bash
+   git clone [https://github.com/KamiloVelasquez/CrediSmart_React.git](https://github.com/KamiloVelasquez/CrediSmart_React.git)
+   cd CrediSmart_React
+   `
 
 2. Instala las dependencias:
-   ```bash
-   npm install
-   ```
+      `bash
+   npm install
+   `
 
 3. Inicia el servidor de desarrollo:
-   ```bash
-   npm run dev
-   ```
+      `bash
+   npm run dev
+   `
 
 4. Abre tu navegador en: `http://localhost:5173`
 
