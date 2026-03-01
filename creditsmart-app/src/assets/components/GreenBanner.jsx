@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import vehiculoImg from '../images/Credito_Vehiculo.png';
+import vehiculoImg from '../images/credito_vehiculo.png';
 
 const styles = {
   banner: {
