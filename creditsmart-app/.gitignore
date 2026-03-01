@@ -23,3 +23,7 @@ dist-ssr
 *.sln
 *.sw?
 *node_modules*/
+
+# Allow image assets
+!src/assets/images/
+!src/assets/images/*.png
