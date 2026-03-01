@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from "react";
 import { creditos } from "../../data/creditos"; 
-import illustration from "../IMAGES/Credito_Libre_Inversion.png"; // ¡Verifica que esta ruta sea correcta!
+import illustration from "../images/Credito_Libre_Inversion.png"; // ¡Verifica que esta ruta sea correcta!
 import Swal from 'sweetalert2';
 import { db } from "../../firebase/config"; 
 import { collection, addDoc } from "firebase/firestore";

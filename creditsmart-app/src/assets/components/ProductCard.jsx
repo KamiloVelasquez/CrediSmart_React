@@ -1,6 +1,6 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
-import placeholder from '../IMAGES/libre.png'
+import placeholder from '../images/libre.png'
 
 // Tarjeta alternativa (compatible con ambos shapes de datos)
 export default function ProductCard({ product }) {
