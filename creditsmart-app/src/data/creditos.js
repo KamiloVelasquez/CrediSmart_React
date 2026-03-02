@@ -1,9 +1,9 @@
-import libreImg from '../assets/IMAGES/libre.png';
-import vehiculoImg from '../assets/IMAGES/vehiculo.png';
-import viviendaImg from '../assets/IMAGES/vivienda.png';
-import educativoImg from '../assets/IMAGES/educativo.png';
-import empresarialImg from '../assets/IMAGES/empresarial.png';
-import consumoImg from '../assets/IMAGES/consumo.png';
+import libreImg from '../assets/images/libre.png';
+import vehiculoImg from '../assets/images/vehiculo.png';
+import viviendaImg from '../assets/images/vivienda.png';
+import educativoImg from '../assets/images/educativo.png';
+import empresarialImg from '../assets/images/empresarial.png';
+import consumoImg from '../assets/images/consumo.png';
 
 export const creditos = [
   {

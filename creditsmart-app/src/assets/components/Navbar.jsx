@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import logo from "../IMAGES/logo_CreditSmart.png";
+import logo from "../images/logo_creditsmart.png";
 
 export default function Navbar() {
   return (
